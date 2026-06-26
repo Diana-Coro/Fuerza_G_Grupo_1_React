@@ -1,0 +1,71 @@
+.objgasto-container {
+  padding: 20px;
+}
+
+.objgasto-titulo {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #1a1a2e;
+  border-bottom: 2px solid #1a1a2e;
+  padding-bottom: 8px;
+}
+
+.objgasto-botones {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+.btn-nuevo {
+  background-color: #2196F3;
+}
+
+.btn-editar {
+  background-color: #FF9800;
+}
+
+.btn-eliminar {
+  background-color: #f44336;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.objgasto-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.objgasto-tabla th {
+  background-color: #1a1a2e;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+.objgasto-tabla td {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+}
+
+.objgasto-tabla tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.objgasto-tabla tr:hover {
+  background-color: #dce8f7;
+}
