@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import {
   listarEntidades,
   buscarEntidadPorId,
@@ -24,7 +24,6 @@ const entidadInicial = {
 };
 
 function Entidades() {
-  const navigate = useNavigate();
   const [entidades, setEntidades] = useState([]);
   const [formulario, setFormulario] = useState(entidadInicial);
   const [idEditar, setIdEditar] = useState(null);
