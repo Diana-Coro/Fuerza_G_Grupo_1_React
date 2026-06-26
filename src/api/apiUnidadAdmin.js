@@ -1,3 +1,3 @@
-const API_URL = "http://localhost:3000/unidadadmin";
+const API_URL = "https://TU-URL.onrender.com/api/unidadadmin";
 
 export default API_URL;
