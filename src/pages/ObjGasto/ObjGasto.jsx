@@ -1,53 +1,306 @@
-import './ObjGasto.css'
+import { useEffect, useState } from "react";
+import {
+  listarObjGastos,
+  buscarObjGastoPorId,
+  guardarObjGasto,
+  actualizarObjGasto,
+  eliminarObjGasto,
+} from "../../services/objGastoService";
 
-const objGastos = [
-  { gestion: 0, partida: "41100", descrip: "Edificios" },
-  { gestion: 0, partida: "41200", descrip: "Tierras y Terrenos" },
-  { gestion: 0, partida: "41300", descrip: "Otras adquisiciones" },
-  { gestion: 0, partida: "43100", descrip: "Equipo de Oficina y Muebles" },
-  { gestion: 0, partida: "43200", descrip: "Maquinaria y Equipo de Produccion" },
-  { gestion: 0, partida: "43300", descrip: "Equipo de Transporte, Traccion y Elevacion" },
-  { gestion: 0, partida: "43400", descrip: "Equipo Medico y de Laboratorio" },
-  { gestion: 0, partida: "43500", descrip: "Equipo de Comunicaciones" },
-  { gestion: 0, partida: "43600", descrip: "Equipo Educacional y Recreativo" },
-  { gestion: 0, partida: "43700", descrip: "Otra Maquinaria y Equipo" },
-  { gestion: 2012, partida: "41100", descrip: "Edificios" },
-  { gestion: 2012, partida: "41200", descrip: "Tierras y Terrenos" },
-  { gestion: 2012, partida: "43100", descrip: "Equipo de Oficina y Muebles" },
-  { gestion: 2012, partida: "43200", descrip: "Maquinaria y Equipo de Produccion" },
-]
+import "./ObjGasto.css";
 
 function ObjGasto() {
-  return (
-    <div className="objgasto-container">
-      <h2 className="objgasto-titulo">Objeto de Gasto</h2>
+  const [objGastos, setObjGastos] = useState([]);
+  const [objGastoSeleccionado, setObjGastoSeleccionado] = useState(null);
 
-      <div className="objgasto-botones">
-        <button className="btn btn-nuevo">Nuevo</button>
-        <button className="btn btn-editar">Editar</button>
-        <button className="btn btn-eliminar">Eliminar</button>
+  const [partida, setPartida] = useState("");
+  const [gestion, setGestion] = useState("");
+  const [descrip, setDescrip] = useState("");
+
+  const [idBuscar, setIdBuscar] = useState("");
+  const [idEditar, setIdEditar] = useState(null);
+
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mostrarEliminar, setMostrarEliminar] = useState(false);
+  const [modoFormulario, setModoFormulario] = useState("");
+
+  const cargarObjGastos = async () => {
+    const datos = await listarObjGastos();
+    setObjGastos(datos);
+    setObjGastoSeleccionado(null);
+  };
+
+  useEffect(() => {
+    cargarObjGastos();
+  }, []);
+
+  const buscarPorId = async () => {
+    if (idBuscar === "") {
+      alert("Ingrese una partida para buscar");
+      return;
+    }
+
+    try {
+      const dato = await buscarObjGastoPorId(idBuscar);
+      setObjGastos([dato]);
+      setObjGastoSeleccionado(null);
+    } catch (error) {
+      alert("No se encontró el objeto de gasto");
+    }
+  };
+
+  const nuevo = () => {
+    setModoFormulario("nuevo");
+    setIdEditar(null);
+    setPartida("");
+    setGestion("");
+    setDescrip("");
+    setMostrarFormulario(true);
+  };
+
+  const editarSeleccionado = () => {
+    if (objGastoSeleccionado === null) {
+      alert("Seleccione un objeto de gasto de la tabla");
+      return;
+    }
+
+    setModoFormulario("editar");
+
+    setIdEditar(objGastoSeleccionado.partida);
+    setPartida(objGastoSeleccionado.partida);
+    setGestion(objGastoSeleccionado.gestion);
+    setDescrip(objGastoSeleccionado.descrip);
+
+    setMostrarFormulario(true);
+  };
+
+  const guardar = async (e) => {
+    e.preventDefault();
+
+    if (partida === "" || gestion === "" || descrip.trim() === "") {
+      alert("Complete todos los campos");
+      return;
+    }
+
+    const objGasto = {
+      partida: partida,
+      gestion: gestion,
+      descrip: descrip,
+    };
+
+    if (modoFormulario === "nuevo") {
+      await guardarObjGasto(objGasto);
+    } else {
+      await actualizarObjGasto(idEditar, objGasto);
+    }
+
+    setMostrarFormulario(false);
+    setIdEditar(null);
+    setPartida("");
+    setGestion("");
+    setDescrip("");
+    setObjGastoSeleccionado(null);
+
+    cargarObjGastos();
+  };
+
+  const cancelarFormulario = () => {
+    setMostrarFormulario(false);
+    setIdEditar(null);
+    setPartida("");
+    setGestion("");
+    setDescrip("");
+  };
+
+  const eliminarSeleccionado = () => {
+    if (objGastoSeleccionado === null) {
+      alert("Seleccione un objeto de gasto para eliminar");
+      return;
+    }
+
+    setMostrarEliminar(true);
+  };
+
+  const confirmarEliminar = async () => {
+    await eliminarObjGasto(objGastoSeleccionado.partida);
+
+    setMostrarEliminar(false);
+    setObjGastoSeleccionado(null);
+    cargarObjGastos();
+  };
+
+  const seleccionarObjGasto = () => {
+    if (objGastoSeleccionado === null) {
+      alert("Seleccione un objeto de gasto de la tabla");
+      return;
+    }
+
+    alert(
+      "Objeto de gasto seleccionado: " +
+        objGastoSeleccionado.partida +
+        " - " +
+        objGastoSeleccionado.descrip
+    );
+  };
+
+  const salir = () => {
+    alert("Saliendo de Objeto de Gasto");
+  };
+
+  return (
+    <div className="objgasto-page">
+      <div className="objgasto-panel">
+        <div className="objgasto-header">ADMINISTRACIÓN DE OBJETO DE GASTO</div>
+
+        <div className="objgasto-busqueda">
+          <input
+            type="number"
+            placeholder="Buscar por partida"
+            value={idBuscar}
+            onChange={(e) => setIdBuscar(e.target.value)}
+          />
+
+          <button type="button" onClick={buscarPorId}>
+            Buscar
+          </button>
+
+          <button type="button" onClick={cargarObjGastos}>
+            Mostrar todos
+          </button>
+        </div>
+
+        <div className="tabla-contenedor">
+          <table className="objgasto-tabla">
+            <thead>
+              <tr>
+                <th>PARTIDA</th>
+                <th>GESTIÓN</th>
+                <th>DESCRIPCIÓN</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {objGastos.length > 0 ? (
+                objGastos.map((obj) => (
+                  <tr
+                    key={obj.partida}
+                    onClick={() => setObjGastoSeleccionado(obj)}
+                    className={
+                      objGastoSeleccionado?.partida === obj.partida
+                        ? "fila-seleccionada"
+                        : ""
+                    }
+                  >
+                    <td>{obj.partida}</td>
+                    <td>{obj.gestion}</td>
+                    <td>{obj.descrip}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3">No hay objetos de gasto registrados</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="botones-panel">
+          <button type="button" onClick={nuevo}>
+            Nuevo
+          </button>
+
+          <button type="button" onClick={editarSeleccionado}>
+            Editar
+          </button>
+
+          <button type="button" onClick={eliminarSeleccionado}>
+            Eliminar
+          </button>
+
+          <button type="button" onClick={seleccionarObjGasto}>
+            Seleccionar
+          </button>
+
+          <button type="button" onClick={salir}>
+            Salir
+          </button>
+        </div>
       </div>
 
-      <table className="objgasto-tabla">
-        <thead>
-          <tr>
-            <th>Gestion</th>
-            <th>Partida</th>
-            <th>Descripcion</th>
-          </tr>
-        </thead>
-        <tbody>
-          {objGastos.map((item, index) => (
-            <tr key={index}>
-              <td>{item.gestion}</td>
-              <td>{item.partida}</td>
-              <td>{item.descrip}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {mostrarFormulario && (
+        <div className="modal-fondo">
+          <div className="modal-caja">
+            <div className="modal-header">
+              {modoFormulario === "nuevo"
+                ? "NUEVO OBJETO DE GASTO"
+                : "EDITAR OBJETO DE GASTO"}
+            </div>
+
+            <form className="modal-formulario" onSubmit={guardar}>
+              <label>Partida:</label>
+              <input
+                type="number"
+                placeholder="Ingrese partida"
+                value={partida}
+                onChange={(e) => setPartida(e.target.value)}
+                disabled={modoFormulario === "editar"}
+              />
+
+              <label>Gestión:</label>
+              <input
+                type="number"
+                placeholder="Ingrese gestión"
+                value={gestion}
+                onChange={(e) => setGestion(e.target.value)}
+              />
+
+              <label>Descripción:</label>
+              <input
+                type="text"
+                placeholder="Ingrese descripción"
+                value={descrip}
+                onChange={(e) => setDescrip(e.target.value)}
+              />
+
+              <div className="modal-botones">
+                <button type="submit">
+                  {modoFormulario === "nuevo" ? "Guardar" : "Actualizar"}
+                </button>
+
+                <button type="button" onClick={cancelarFormulario}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {mostrarEliminar && (
+        <div className="modal-fondo">
+          <div className="modal-caja">
+            <div className="modal-header">ELIMINAR OBJETO DE GASTO</div>
+
+            <p className="modal-texto">
+              ¿Desea eliminar la partida{" "}
+              <b>{objGastoSeleccionado?.partida}</b>?
+            </p>
+
+            <div className="modal-botones">
+              <button type="button" onClick={confirmarEliminar}>
+                Sí, eliminar
+              </button>
+
+              <button type="button" onClick={() => setMostrarEliminar(false)}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default ObjGasto
+export default ObjGasto;
