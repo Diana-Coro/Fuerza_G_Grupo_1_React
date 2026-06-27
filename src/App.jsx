@@ -7,6 +7,8 @@ import Estado from "./pages/Estado/Estado";
 import Mes from "./pages/Mes/Mes";
 import Entidades from "./pages/Entidades/Entidades";
 import ObjGasto from "./pages/ObjGasto/ObjGasto";
+// 1. IMPORTAMOS EL NUEVO COMPONENTE
+import CtaPar from "./pages/CtaPar/CtaPar";
 
 function App() {
   const [logueado, setLogueado] = useState(false);
@@ -18,6 +20,8 @@ function App() {
     if (paginaActual === "mes") return <Mes />;
     if (paginaActual === "objgasto") return <ObjGasto />;
     if (paginaActual === "unidadadmin") return <UnidadAdmin />;
+    // 2. AGREGAMOS LA CONDICIÓN PARA MOSTRAR CTA PAR
+    if (paginaActual === "ctapar") return <CtaPar />;
     return <Entidades />;
   };
 
@@ -44,8 +48,6 @@ function App() {
           </div>
         </header>
 
-
-
         <div className="vsiaf-body">
           <aside className="vsiaf-menu">
             <h3>MENU PRINCIPAL</h3>
@@ -69,15 +71,20 @@ function App() {
             <button onClick={() => setPaginaActual("unidadadmin")}>
               Unidad Admin
             </button>
-            <div className="vsiaf-info">
 
-                      <button
-                        className="btn-cerrar-sesion"
-                        onClick={() => setLogueado(false)}
-                      >
-                        Cerrar sesión
-                      </button>
-                    </div>
+            {/* 3. AGREGAMOS EL BOTÓN EN EL MENÚ */}
+            <button onClick={() => setPaginaActual("ctapar")}>
+              Cta Par
+            </button>
+
+            <div className="vsiaf-info">
+              <button
+                className="btn-cerrar-sesion"
+                onClick={() => setLogueado(false)}
+              >
+                Cerrar sesión
+              </button>
+            </div>
           </aside>
 
           <main className="vsiaf-content">{mostrarPagina()}</main>
