@@ -160,7 +160,8 @@ body {
 .mes-tabla,
 .entidades-tabla,
 .objgasto-tabla,
-.tabla-unidad{
+.tabla-unidad,
+.ctapar-tabla {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -173,7 +174,8 @@ body {
 .mes-tabla th,
 .entidades-tabla th,
 .objgasto-tabla th,
- .tabla-unidad th{
+ .tabla-unidad th,
+ .ctapar-tabla th{
   background: #00416d;
   color: white;
   padding: 12px;
@@ -185,7 +187,8 @@ body {
 .mes-tabla td,
 .entidades-tabla td,
 .objgasto-tabla td,
- .tabla-unidad td{
+ .tabla-unidad td,
+ .ctapar-tabla td{
   background: rgba(255, 255, 255, 0.65);
 }
 .btn-cerrar-sesion {

@@ -7,6 +7,7 @@ import Estado from "./pages/Estado/Estado";
 import Mes from "./pages/Mes/Mes";
 import Entidades from "./pages/Entidades/Entidades";
 import ObjGasto from "./pages/ObjGasto/ObjGasto";
+import CtaPar from "./pages/CtaPar/CtaPar";
 
 function App() {
   const [logueado, setLogueado] = useState(false);
@@ -18,6 +19,7 @@ function App() {
     if (paginaActual === "mes") return <Mes />;
     if (paginaActual === "objgasto") return <ObjGasto />;
     if (paginaActual === "unidadadmin") return <UnidadAdmin />;
+    if (paginaActual === "ctapar") return <CtaPar />;
     return <Entidades />;
   };
 
@@ -68,6 +70,9 @@ function App() {
 
             <button onClick={() => setPaginaActual("unidadadmin")}>
               Unidad Admin
+            </button>
+            <button onClick={() => setPaginaActual("ctapar")}>
+              Cta Par
             </button>
             <div className="vsiaf-info">
 
