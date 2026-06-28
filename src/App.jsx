@@ -71,7 +71,7 @@ function App() {
             </button>
 
             <button onClick={() => setPaginaActual("tiposbaja")}>
-              TiposBaja
+              Tipos de Baja
             </button>
 
             <button onClick={() => setPaginaActual("unidadadmin")}>
