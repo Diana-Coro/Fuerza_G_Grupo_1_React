@@ -11,8 +11,9 @@ function UnidadAdmin() {
   const [unidades, setUnidades] = useState([]);
 
   const [formulario, setFormulario] = useState({
+    entidad: "",
     unidad: "",
-    descripcion: "",
+    descrip: "",
     ciudad: "",
   });
 
@@ -28,9 +29,14 @@ function UnidadAdmin() {
   }, []);
 
   const cargarUnidades = async () => {
-    const data = await obtenerUnidades();
-    setUnidades(data);
-    setUnidadSeleccionada(null);
+    try {
+      const data = await obtenerUnidades();
+      setUnidades(Array.isArray(data) ? data : []);
+      setUnidadSeleccionada(null);
+    } catch (error) {
+      console.error("Error al cargar unidades:", error);
+      alert("No se pudieron cargar las unidades");
+    }
   };
 
   const manejarCambio = (e) => {
@@ -43,11 +49,15 @@ function UnidadAdmin() {
   const nuevo = () => {
     setModoFormulario("nuevo");
     setIdEditar(null);
+    setUnidadSeleccionada(null);
+
     setFormulario({
+      entidad: "",
       unidad: "",
-      descripcion: "",
+      descrip: "",
       ciudad: "",
     });
+
     setMostrarFormulario(true);
   };
 
@@ -58,12 +68,13 @@ function UnidadAdmin() {
     }
 
     setModoFormulario("editar");
-    setIdEditar(unidadSeleccionada.id);
+    setIdEditar(unidadSeleccionada.unidad);
 
     setFormulario({
-      unidad: unidadSeleccionada.unidad,
-      descripcion: unidadSeleccionada.descripcion,
-      ciudad: unidadSeleccionada.ciudad,
+      entidad: unidadSeleccionada.entidad ?? "",
+      unidad: unidadSeleccionada.unidad ?? "",
+      descrip: unidadSeleccionada.descrip ?? "",
+      ciudad: unidadSeleccionada.ciudad ?? "",
     });
 
     setMostrarFormulario(true);
@@ -72,26 +83,48 @@ function UnidadAdmin() {
   const guardarUnidad = async (e) => {
     e.preventDefault();
 
-    if (!formulario.unidad || !formulario.descripcion || !formulario.ciudad) {
+    if (
+      !formulario.entidad ||
+      !formulario.unidad ||
+      !formulario.descrip ||
+      !formulario.ciudad
+    ) {
       alert("Completa todos los campos");
       return;
     }
 
-    if (modoFormulario === "nuevo") {
-      await crearUnidad(formulario);
-    } else {
-      await actualizarUnidad(idEditar, formulario);
+    const unidadEnviar = {
+      entidad: Number(formulario.entidad),
+      unidad: Number(formulario.unidad),
+      descrip: formulario.descrip,
+      ciudad: formulario.ciudad,
+    };
+
+    try {
+      if (modoFormulario === "nuevo") {
+        await crearUnidad(unidadEnviar);
+        alert("Unidad guardada correctamente");
+      } else {
+        await actualizarUnidad(idEditar, unidadEnviar);
+        alert("Unidad actualizada correctamente");
+      }
+
+      setMostrarFormulario(false);
+      setIdEditar(null);
+      setUnidadSeleccionada(null);
+
+      setFormulario({
+        entidad: "",
+        unidad: "",
+        descrip: "",
+        ciudad: "",
+      });
+
+      cargarUnidades();
+    } catch (error) {
+      console.error("Error al guardar unidad:", error);
+      alert("No se pudo guardar la unidad. Revisa la consola.");
     }
-
-    setMostrarFormulario(false);
-    setIdEditar(null);
-    setFormulario({
-      unidad: "",
-      descripcion: "",
-      ciudad: "",
-    });
-
-    cargarUnidades();
   };
 
   const abrirEliminar = () => {
@@ -104,11 +137,18 @@ function UnidadAdmin() {
   };
 
   const confirmarEliminar = async () => {
-    await eliminarUnidad(unidadSeleccionada.id);
+    try {
+      await eliminarUnidad(unidadSeleccionada.unidad);
 
-    setMostrarEliminar(false);
-    setUnidadSeleccionada(null);
-    cargarUnidades();
+      setMostrarEliminar(false);
+      setUnidadSeleccionada(null);
+      cargarUnidades();
+
+      alert("Unidad eliminada correctamente");
+    } catch (error) {
+      console.error("Error al eliminar unidad:", error);
+      alert("No se pudo eliminar la unidad");
+    }
   };
 
   const seleccionar = () => {
@@ -119,9 +159,12 @@ function UnidadAdmin() {
 
     alert(
       "Unidad seleccionada: " +
+        "Entidad " +
+        unidadSeleccionada.entidad +
+        " - Unidad " +
         unidadSeleccionada.unidad +
         " - " +
-        unidadSeleccionada.descripcion +
+        unidadSeleccionada.descrip +
         " - " +
         unidadSeleccionada.ciudad
     );
@@ -130,8 +173,9 @@ function UnidadAdmin() {
   const limpiar = () => {
     setUnidadSeleccionada(null);
     setFormulario({
+      entidad: "",
       unidad: "",
-      descripcion: "",
+      descrip: "",
       ciudad: "",
     });
     setIdEditar(null);
@@ -151,6 +195,7 @@ function UnidadAdmin() {
         <table className="tabla-unidad">
           <thead>
             <tr>
+              <th>ENTIDAD</th>
               <th>UNIDAD</th>
               <th>DESCRIPCIÓN</th>
               <th>CIUDAD</th>
@@ -161,22 +206,24 @@ function UnidadAdmin() {
             {unidades.length > 0 ? (
               unidades.map((item) => (
                 <tr
-                  key={item.id}
+                  key={`${item.entidad}-${item.unidad}`}
                   onClick={() => setUnidadSeleccionada(item)}
                   className={
-                    unidadSeleccionada?.id === item.id
+                    unidadSeleccionada?.entidad === item.entidad &&
+                    unidadSeleccionada?.unidad === item.unidad
                       ? "fila-seleccionada"
                       : ""
                   }
                 >
+                  <td>{item.entidad}</td>
                   <td>{item.unidad}</td>
-                  <td>{item.descripcion}</td>
+                  <td>{item.descrip}</td>
                   <td>{item.ciudad}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3">No hay unidades registradas</td>
+                <td colSpan="4">No hay unidades registradas</td>
               </tr>
             )}
           </tbody>
@@ -202,21 +249,32 @@ function UnidadAdmin() {
             </div>
 
             <form className="modal-formulario" onSubmit={guardarUnidad}>
+              <label>Entidad:</label>
+              <input
+                type="number"
+                name="entidad"
+                placeholder="Ingrese entidad"
+                value={formulario.entidad}
+                onChange={manejarCambio}
+                disabled={modoFormulario === "editar"}
+              />
+
               <label>Unidad:</label>
               <input
-                type="text"
+                type="number"
                 name="unidad"
                 placeholder="Ingrese unidad"
                 value={formulario.unidad}
                 onChange={manejarCambio}
+                disabled={modoFormulario === "editar"}
               />
 
               <label>Descripción:</label>
               <input
                 type="text"
-                name="descripcion"
+                name="descrip"
                 placeholder="Ingrese descripción"
-                value={formulario.descripcion}
+                value={formulario.descrip}
                 onChange={manejarCambio}
               />
 
@@ -255,7 +313,10 @@ function UnidadAdmin() {
 
             <p className="modal-texto">
               ¿Desea eliminar la unidad{" "}
-              <b>{unidadSeleccionada?.descripcion}</b>?
+              <b>
+                {unidadSeleccionada?.unidad} - {unidadSeleccionada?.descrip}
+              </b>
+              ?
             </p>
 
             <div className="modal-botones">

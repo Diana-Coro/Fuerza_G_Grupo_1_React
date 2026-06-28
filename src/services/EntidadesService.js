@@ -1,16 +1,22 @@
 import API_URL from "../api/apiEntidades";
 
 async function handleResponse(response, errorMessage) {
+  const text = await response.text();
+
   if (!response.ok) {
-    const text = await response.text();
+    console.error("Error del backend:", text);
     throw new Error(text || errorMessage || `Error ${response.status}`);
   }
 
-  if (response.status === 204) {
+  if (!text) {
     return null;
   }
 
-  return await response.json();
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 export const listarEntidades = async () => {
@@ -20,10 +26,12 @@ export const listarEntidades = async () => {
 
 export const buscarEntidadPorId = async (id) => {
   const response = await fetch(`${API_URL}/${id}`);
-  return await handleResponse(response, "No se encontro la entidad");
+  return await handleResponse(response, "No se encontró la entidad");
 };
 
 export const guardarEntidad = async (entidad) => {
+  console.log("Entidad enviada al backend:", entidad);
+
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -36,6 +44,8 @@ export const guardarEntidad = async (entidad) => {
 };
 
 export const actualizarEntidad = async (id, entidad) => {
+  console.log("Entidad actualizada enviada:", entidad);
+
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
@@ -52,10 +62,20 @@ export const eliminarEntidad = async (id) => {
     method: "DELETE",
   });
 
-  return await handleResponse(response, "No se pudo eliminar la entidad");
+  if (!response.ok) {
+    const error = await response.text();
+    console.error("Error al eliminar entidad:", error);
+    throw new Error(error || "No se pudo eliminar la entidad");
+  }
+
+  return true;
 };
 
 export const existeEntidad = async (id) => {
   const entidades = await listarEntidades();
-  return entidades.some((item) => Number(item.entidad) === Number(id));
+
+  return entidades.some(
+    (item) =>
+      Number(item.entidad ?? item.Entidad) === Number(id)
+  );
 };

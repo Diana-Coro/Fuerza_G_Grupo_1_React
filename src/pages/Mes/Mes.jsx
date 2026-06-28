@@ -10,7 +10,8 @@ import "./mes.css";
 
 function Mes() {
   const [meses, setMeses] = useState([]);
-  const [nombres, setNombres] = useState("");
+  const [mesCodigo, setMesCodigo] = useState("");
+  const [nommes, setNommes] = useState("");
   const [mesSeleccionado, setMesSeleccionado] = useState(null);
   const [idBuscar, setIdBuscar] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -36,6 +37,7 @@ function Mes() {
     try {
       const dato = await buscarMesPorId(idBuscar);
       setMeses([dato]);
+      setMesSeleccionado(null);
     } catch {
       alert("Mes no encontrado");
     }
@@ -43,7 +45,9 @@ function Mes() {
 
   const nuevo = () => {
     setModoFormulario("nuevo");
-    setNombres("");
+    setMesCodigo("");
+    setNommes("");
+    setMesSeleccionado(null);
     setMostrarFormulario(true);
   };
 
@@ -54,41 +58,76 @@ function Mes() {
     }
 
     setModoFormulario("editar");
-    setNombres(mesSeleccionado.nombres);
+    setMesCodigo(mesSeleccionado.mes);
+    setNommes(mesSeleccionado.nommes);
     setMostrarFormulario(true);
   };
 
   const guardar = async (e) => {
     e.preventDefault();
 
-    const mes = {
-      nombres: nombres,
-    };
-
-    if (modoFormulario === "nuevo") {
-      await guardarMes(mes);
-    } else {
-      await actualizarMes(mesSeleccionado.mes, mes);
+    if (mesCodigo === "" || nommes.trim() === "") {
+      alert("Complete todos los campos");
+      return;
     }
 
-    setMostrarFormulario(false);
-    cargarMeses();
+    const mes = {
+      mes: Number(mesCodigo),
+      nommes: nommes,
+    };
+
+    try {
+      if (modoFormulario === "nuevo") {
+        await guardarMes(mes);
+      } else {
+        await actualizarMes(mesSeleccionado.mes, mes);
+      }
+
+      setMostrarFormulario(false);
+      setMesCodigo("");
+      setNommes("");
+      setMesSeleccionado(null);
+      cargarMeses();
+    } catch (error) {
+      console.error("Error al guardar mes:", error);
+      alert("No se pudo guardar el mes. Revise consola o backend.");
+    }
+  };
+
+  const abrirEliminar = () => {
+    if (!mesSeleccionado) {
+      alert("Seleccione un registro para eliminar");
+      return;
+    }
+
+    setMostrarEliminar(true);
   };
 
   const eliminar = async () => {
-    await eliminarMes(mesSeleccionado.mes);
-    setMostrarEliminar(false);
-    cargarMeses();
+    try {
+      await eliminarMes(mesSeleccionado.mes);
+      setMostrarEliminar(false);
+      setMesSeleccionado(null);
+      cargarMeses();
+    } catch (error) {
+      console.error("Error al eliminar mes:", error);
+      alert("No se pudo eliminar el mes");
+    }
+  };
+
+  const seleccionar = () => {
+    if (!mesSeleccionado) {
+      alert("Seleccione un registro");
+      return;
+    }
+
+    alert(`Mes seleccionado: ${mesSeleccionado.mes} - ${mesSeleccionado.nommes}`);
   };
 
   return (
     <div className="mes-page">
-
       <div className="mes-panel">
-
-        <div className="mes-header">
-          ADMINISTRACIÓN DE MES
-        </div>
+        <div className="mes-header">ADMINISTRACIÓN DE MES</div>
 
         <div className="mes-busqueda">
           <input
@@ -98,170 +137,119 @@ function Mes() {
             onChange={(e) => setIdBuscar(e.target.value)}
           />
 
-          <button onClick={buscar}>
-            Buscar
-          </button>
+          <button onClick={buscar}>Buscar</button>
 
-          <button onClick={cargarMeses}>
-            Mostrar Todos
-          </button>
+          <button onClick={cargarMeses}>Mostrar Todos</button>
         </div>
 
         <div className="tabla-contenedor">
-
           <table className="mes-tabla">
-
             <thead>
               <tr>
                 <th>Mes</th>
-                <th>Nombres</th>
+                <th>Nombre del Mes</th>
               </tr>
             </thead>
 
             <tbody>
-
-              {meses.map((mes) => (
-
-                <tr
-                  key={mes.mes}
-                  onClick={() => setMesSeleccionado(mes)}
-                  className={
-                    mesSeleccionado?.mes === mes.mes
-                      ? "fila-seleccionada"
-                      : ""
-                  }
-                >
-
-                  <td>{mes.mes}</td>
-                  <td>{mes.nombres}</td>
-
+              {meses.length > 0 ? (
+                meses.map((mes) => (
+                  <tr
+                    key={mes.mes}
+                    onClick={() => setMesSeleccionado(mes)}
+                    className={
+                      mesSeleccionado?.mes === mes.mes
+                        ? "fila-seleccionada"
+                        : ""
+                    }
+                  >
+                    <td>{mes.mes}</td>
+                    <td>{mes.nommes}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="2">No hay meses registrados</td>
                 </tr>
-
-              ))}
-
+              )}
             </tbody>
-
           </table>
-
         </div>
 
         <div className="botones-panel">
-
-          <button onClick={nuevo}>
-            Nuevo
-          </button>
-
-          <button onClick={editar}>
-            Editar
-          </button>
-
-          <button onClick={() => setMostrarEliminar(true)}>
-            Eliminar
-          </button>
-
-          <button
-            onClick={() =>
-              alert(
-                mesSeleccionado
-                  ? `Mes seleccionado: ${mesSeleccionado.nombres}`
-                  : "Seleccione un registro"
-              )
-            }
-          >
-            Seleccionar
-          </button>
-
-          <button onClick={() => window.history.back()}>
-            Salir
-          </button>
-
+          <button onClick={nuevo}>Nuevo</button>
+          <button onClick={editar}>Editar</button>
+          <button onClick={abrirEliminar}>Eliminar</button>
+          <button onClick={seleccionar}>Seleccionar</button>
+          <button onClick={() => window.history.back()}>Salir</button>
         </div>
-
       </div>
 
       {mostrarFormulario && (
-
         <div className="modal-fondo">
-
           <div className="modal-caja">
-
             <div className="modal-header">
-              {modoFormulario === "nuevo"
-                ? "NUEVO MES"
-                : "EDITAR MES"}
+              {modoFormulario === "nuevo" ? "NUEVO MES" : "EDITAR MES"}
             </div>
 
-            <form
-              className="modal-formulario"
-              onSubmit={guardar}
-            >
+            <form className="modal-formulario" onSubmit={guardar}>
+              <label>Código del mes</label>
+              <input
+                type="number"
+                value={mesCodigo}
+                onChange={(e) => setMesCodigo(e.target.value)}
+                placeholder="Ejemplo: 1"
+                disabled={modoFormulario === "editar"}
+              />
 
               <label>Nombre del mes</label>
-
               <input
                 type="text"
-                value={nombres}
-                onChange={(e) => setNombres(e.target.value)}
+                value={nommes}
+                onChange={(e) => setNommes(e.target.value)}
+                placeholder="Ejemplo: Enero"
               />
 
               <div className="modal-botones">
-
                 <button type="submit">
-                  Guardar
+                  {modoFormulario === "nuevo" ? "Guardar" : "Actualizar"}
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setMostrarFormulario(false)}
+                  onClick={() => {
+                    setMostrarFormulario(false);
+                    setMesCodigo("");
+                    setNommes("");
+                  }}
                 >
                   Cancelar
                 </button>
-
               </div>
-
             </form>
-
           </div>
-
         </div>
-
       )}
 
       {mostrarEliminar && (
-
         <div className="modal-fondo">
-
           <div className="modal-caja">
-
-            <div className="modal-header">
-              ELIMINAR MES
-            </div>
+            <div className="modal-header">ELIMINAR MES</div>
 
             <p className="modal-texto">
-              ¿Desea eliminar el mes{" "}
-              <b>{mesSeleccionado?.nombres}</b>?
+              ¿Desea eliminar el mes <b>{mesSeleccionado?.nommes}</b>?
             </p>
 
             <div className="modal-botones">
+              <button onClick={eliminar}>Sí</button>
 
-              <button onClick={eliminar}>
-                Sí
-              </button>
-
-              <button
-                onClick={() => setMostrarEliminar(false)}
-              >
+              <button onClick={() => setMostrarEliminar(false)}>
                 Cancelar
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       )}
-
     </div>
   );
 }

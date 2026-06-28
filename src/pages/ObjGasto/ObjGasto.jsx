@@ -25,9 +25,14 @@ function ObjGasto() {
   const [modoFormulario, setModoFormulario] = useState("");
 
   const cargarObjGastos = async () => {
-    const datos = await listarObjGastos();
-    setObjGastos(datos);
-    setObjGastoSeleccionado(null);
+    try {
+      const datos = await listarObjGastos();
+      setObjGastos(Array.isArray(datos) ? datos : []);
+      setObjGastoSeleccionado(null);
+    } catch (error) {
+      console.error("Error al cargar objetos de gasto:", error);
+      alert("No se pudieron cargar los objetos de gasto");
+    }
   };
 
   useEffect(() => {
@@ -45,6 +50,7 @@ function ObjGasto() {
       setObjGastos([dato]);
       setObjGastoSeleccionado(null);
     } catch (error) {
+      console.error("Error al buscar objeto de gasto:", error);
       alert("No se encontró el objeto de gasto");
     }
   };
@@ -55,6 +61,7 @@ function ObjGasto() {
     setPartida("");
     setGestion("");
     setDescrip("");
+    setObjGastoSeleccionado(null);
     setMostrarFormulario(true);
   };
 
@@ -66,10 +73,10 @@ function ObjGasto() {
 
     setModoFormulario("editar");
 
-    setIdEditar(objGastoSeleccionado.partida);
-    setPartida(objGastoSeleccionado.partida);
-    setGestion(objGastoSeleccionado.gestion);
-    setDescrip(objGastoSeleccionado.descrip);
+    setIdEditar(objGastoSeleccionado.Partida);
+    setPartida(objGastoSeleccionado.Partida);
+    setGestion(objGastoSeleccionado.Gestion);
+    setDescrip(objGastoSeleccionado.Descrip);
 
     setMostrarFormulario(true);
   };
@@ -83,25 +90,32 @@ function ObjGasto() {
     }
 
     const objGasto = {
-      partida: partida,
-      gestion: gestion,
-      descrip: descrip,
+      Partida: partida,
+      Gestion: Number(gestion),
+      Descrip: descrip,
     };
 
-    if (modoFormulario === "nuevo") {
-      await guardarObjGasto(objGasto);
-    } else {
-      await actualizarObjGasto(idEditar, objGasto);
+    try {
+      if (modoFormulario === "nuevo") {
+        await guardarObjGasto(objGasto);
+        alert("Objeto de gasto guardado correctamente");
+      } else {
+        await actualizarObjGasto(idEditar, objGasto);
+        alert("Objeto de gasto actualizado correctamente");
+      }
+
+      setMostrarFormulario(false);
+      setIdEditar(null);
+      setPartida("");
+      setGestion("");
+      setDescrip("");
+      setObjGastoSeleccionado(null);
+
+      cargarObjGastos();
+    } catch (error) {
+      console.error("Error al guardar objeto de gasto:", error);
+      alert("No se pudo guardar el objeto de gasto. Revisa la consola.");
     }
-
-    setMostrarFormulario(false);
-    setIdEditar(null);
-    setPartida("");
-    setGestion("");
-    setDescrip("");
-    setObjGastoSeleccionado(null);
-
-    cargarObjGastos();
   };
 
   const cancelarFormulario = () => {
@@ -122,11 +136,18 @@ function ObjGasto() {
   };
 
   const confirmarEliminar = async () => {
-    await eliminarObjGasto(objGastoSeleccionado.partida);
+    try {
+      await eliminarObjGasto(objGastoSeleccionado.Partida);
 
-    setMostrarEliminar(false);
-    setObjGastoSeleccionado(null);
-    cargarObjGastos();
+      setMostrarEliminar(false);
+      setObjGastoSeleccionado(null);
+      cargarObjGastos();
+
+      alert("Objeto de gasto eliminado correctamente");
+    } catch (error) {
+      console.error("Error al eliminar objeto de gasto:", error);
+      alert("No se pudo eliminar el objeto de gasto");
+    }
   };
 
   const seleccionarObjGasto = () => {
@@ -137,9 +158,11 @@ function ObjGasto() {
 
     alert(
       "Objeto de gasto seleccionado: " +
-        objGastoSeleccionado.partida +
+        objGastoSeleccionado.Partida +
         " - " +
-        objGastoSeleccionado.descrip
+        objGastoSeleccionado.Gestion +
+        " - " +
+        objGastoSeleccionado.Descrip
     );
   };
 
@@ -154,7 +177,7 @@ function ObjGasto() {
 
         <div className="objgasto-busqueda">
           <input
-            type="number"
+            type="text"
             placeholder="Buscar por partida"
             value={idBuscar}
             onChange={(e) => setIdBuscar(e.target.value)}
@@ -183,17 +206,18 @@ function ObjGasto() {
               {objGastos.length > 0 ? (
                 objGastos.map((obj) => (
                   <tr
-                    key={obj.partida}
+                    key={`${obj.Partida}-${obj.Gestion}`}
                     onClick={() => setObjGastoSeleccionado(obj)}
                     className={
-                      objGastoSeleccionado?.partida === obj.partida
+                      objGastoSeleccionado?.Partida === obj.Partida &&
+                      objGastoSeleccionado?.Gestion === obj.Gestion
                         ? "fila-seleccionada"
                         : ""
                     }
                   >
-                    <td>{obj.partida}</td>
-                    <td>{obj.gestion}</td>
-                    <td>{obj.descrip}</td>
+                    <td>{obj.Partida}</td>
+                    <td>{obj.Gestion}</td>
+                    <td>{obj.Descrip}</td>
                   </tr>
                 ))
               ) : (
@@ -240,7 +264,7 @@ function ObjGasto() {
             <form className="modal-formulario" onSubmit={guardar}>
               <label>Partida:</label>
               <input
-                type="number"
+                type="text"
                 placeholder="Ingrese partida"
                 value={partida}
                 onChange={(e) => setPartida(e.target.value)}
@@ -284,7 +308,7 @@ function ObjGasto() {
 
             <p className="modal-texto">
               ¿Desea eliminar la partida{" "}
-              <b>{objGastoSeleccionado?.partida}</b>?
+              <b>{objGastoSeleccionado?.Partida}</b>?
             </p>
 
             <div className="modal-botones">
