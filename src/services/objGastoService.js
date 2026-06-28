@@ -1,21 +1,29 @@
 import API_URL from "../api/apiObjGasto";
 
+const leerRespuesta = async (respuesta) => {
+  const texto = await respuesta.text();
+
+  if (!respuesta.ok) {
+    console.error("Error del backend:", texto);
+    throw new Error(texto || "Error en la petición");
+  }
+
+  return texto ? JSON.parse(texto) : null;
+};
+
 export const listarObjGastos = async () => {
   const respuesta = await fetch(API_URL);
-  return await respuesta.json();
+  return await leerRespuesta(respuesta);
 };
 
 export const buscarObjGastoPorId = async (id) => {
   const respuesta = await fetch(`${API_URL}/${id}`);
-
-  if (!respuesta.ok) {
-    throw new Error("No se encontró el objeto de gasto");
-  }
-
-  return await respuesta.json();
+  return await leerRespuesta(respuesta);
 };
 
 export const guardarObjGasto = async (objGasto) => {
+  console.log("Objeto de gasto enviado:", objGasto);
+
   const respuesta = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -24,10 +32,12 @@ export const guardarObjGasto = async (objGasto) => {
     body: JSON.stringify(objGasto),
   });
 
-  return await respuesta.json();
+  return await leerRespuesta(respuesta);
 };
 
 export const actualizarObjGasto = async (id, objGasto) => {
+  console.log("Objeto de gasto actualizado:", objGasto);
+
   const respuesta = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
@@ -36,11 +46,13 @@ export const actualizarObjGasto = async (id, objGasto) => {
     body: JSON.stringify(objGasto),
   });
 
-  return await respuesta.json();
+  return await leerRespuesta(respuesta);
 };
 
 export const eliminarObjGasto = async (id) => {
-  await fetch(`${API_URL}/${id}`, {
+  const respuesta = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
   });
+
+  return await leerRespuesta(respuesta);
 };

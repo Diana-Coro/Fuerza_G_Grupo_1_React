@@ -85,7 +85,24 @@ function App() {
                     </div>
           </aside>
 
-          <main className="vsiaf-content">{mostrarPagina()}</main>
+          <main className="vsiaf-content">
+                <div className="info-entidad-unidad">
+                  <div>
+                    <span className="label-info">ENTIDAD:</span>
+                    <span className="codigo-info">0025</span>
+                    <span className="texto-info">Ministerio de la Presidencia</span>
+                  </div>
+
+                  <div>
+                    <span className="label-info">UNIDAD:</span>
+                    <span className="codigo-info">0</span>
+                  </div>
+                </div>
+{mostrarPagina()}
+
+
+          </main>
+
         </div>
       </div>
     </div>

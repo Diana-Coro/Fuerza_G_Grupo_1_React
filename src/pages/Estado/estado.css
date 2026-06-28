@@ -1,6 +1,6 @@
 .estado-page {
   min-height: 100vh;
-  background: #e5e5e5;
+  background: white;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -10,7 +10,7 @@
 
 .estado-panel {
   width: 760px;
-  background: #f8f8f8;
+  background: white;
   border: 1px solid #777;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.35);
 }

@@ -1,3 +1,3 @@
-const API_URL = "https://TU-URL.onrender.com/api/unidadadmin";
+const API_URL = "https://fuerza-g-grupo-1-2.onrender.com/unidadadmin";
 
 export default API_URL;

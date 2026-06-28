@@ -5,13 +5,13 @@
   justify-content: center;
   align-items: flex-start;
   font-family: Arial, Helvetica, sans-serif;
-  /* El fondo de tu App general maneja el gris, si necesitas padding lo agregas aquí */
+
 }
 
 .ctapar-panel {
   width: 100%;
   max-width: 900px;
-  background: #f8f8f8;
+  background: white;
   border: 1px solid #777;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.35);
   margin-top: 20px;

@@ -1,11 +1,24 @@
 import API_URL from "../api/apiUnidadAdmin";
 
+const leerRespuesta = async (response) => {
+  const texto = await response.text();
+
+  if (!response.ok) {
+    console.error("Error del backend:", texto);
+    throw new Error(texto || "Error en la petición");
+  }
+
+  return texto ? JSON.parse(texto) : null;
+};
+
 export const obtenerUnidades = async () => {
   const response = await fetch(API_URL);
-  return await response.json();
+  return await leerRespuesta(response);
 };
 
 export const crearUnidad = async (unidad) => {
+  console.log("Unidad enviada al backend:", unidad);
+
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -14,10 +27,12 @@ export const crearUnidad = async (unidad) => {
     body: JSON.stringify(unidad),
   });
 
-  return await response.json();
+  return await leerRespuesta(response);
 };
 
 export const actualizarUnidad = async (id, unidad) => {
+  console.log("Unidad actualizada enviada:", unidad);
+
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
@@ -26,11 +41,13 @@ export const actualizarUnidad = async (id, unidad) => {
     body: JSON.stringify(unidad),
   });
 
-  return await response.json();
+  return await leerRespuesta(response);
 };
 
 export const eliminarUnidad = async (id) => {
-  await fetch(`${API_URL}/${id}`, {
+  const response = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
   });
+
+  return await leerRespuesta(response);
 };
