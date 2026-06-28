@@ -1,0 +1,80 @@
+
+.modulo-derecho {
+    width: 90%;
+    max-width: 850px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+.titulo-seccion-afuera {
+    background: linear-gradient(to bottom, #1d5293, #002e62); /* Azul fuerte */
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #002e62;
+    border-radius: 4px;
+    width: 100%;
+    margin: 10px 0 25px 0;
+    box-sizing: border-box;
+}
+
+.titulo-seccion-afuera h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+.caja-blanca-sistema {
+    background-color: #ffffff;
+    border: 2px solid #a6b9d0; 
+    padding: 25px;
+    display: flex;
+    flex-direction: column; 
+    gap: 20px;
+}
+.contenedor-tabla-sistema {
+    width: 100%;
+}
+.tabla-sistema-azul {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #002e62;
+}
+.tabla-sistema-azul th {
+    background-color: #004b87;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #002e62;
+    font-size: 0.9rem;
+}
+
+.tabla-sistema-azul td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #a6b9d0;
+    font-size: 0.9rem;
+    color: #000000;
+}
+.panel-botones-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;           
+    justify-content: flex-start;
+}
+.btn-sistema-azul {
+    background: linear-gradient(to bottom, #005a9c, #003366); 
+    color: white;
+    border: 1px solid #001427; 
+    border-radius: 4px; 
+    padding: 8px 22px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    min-width: 100px;
+    text-align: center;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); 
+    transition: background 0.2s;
+}
+.btn-sistema-azul:hover {
+    background: linear-gradient(to bottom, #004488, #002244);
+}

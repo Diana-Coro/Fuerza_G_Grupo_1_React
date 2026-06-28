@@ -6,6 +6,7 @@ import UnidadAdmin from "./pages/UnidadAdmin/UnidadAdmin";
 import Estado from "./pages/Estado/Estado";
 import Mes from "./pages/Mes/Mes";
 import Entidades from "./pages/Entidades/Entidades";
+import TiposBaja from './pages/TiposBaja/TiposBaja';
 import ObjGasto from "./pages/ObjGasto/ObjGasto";
 import CtaPar from "./pages/CtaPar/CtaPar";
 
@@ -18,6 +19,7 @@ function App() {
     if (paginaActual === "estado") return <Estado />;
     if (paginaActual === "mes") return <Mes />;
     if (paginaActual === "objgasto") return <ObjGasto />;
+    if (paginaActual === "tiposbaja") return <TiposBaja />;
     if (paginaActual === "unidadadmin") return <UnidadAdmin />;
     if (paginaActual === "ctapar") return <CtaPar />;
     return <Entidades />;
@@ -66,6 +68,10 @@ function App() {
 
             <button onClick={() => setPaginaActual("objgasto")}>
               Objeto de Gasto
+            </button>
+
+            <button onClick={() => setPaginaActual("tiposbaja")}>
+              TiposBaja
             </button>
 
             <button onClick={() => setPaginaActual("unidadadmin")}>
